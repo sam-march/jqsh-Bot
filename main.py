@@ -11,8 +11,8 @@ from webserver import keep_alive
 import random
 from random import randint
 import sys
-import replit
-from replit import db
+import json
+
 
 token = os.environ['token']
 client = commands.Bot(command_prefix="$", intents=discord.Intents.all())
@@ -44,7 +44,12 @@ async def warn(ctx, member: discord.Member, *, reason=None):
 				await member.send(embed=em)
 				rand_value = random.randint(1,100000000)
 				try:
-					db[f'warn{member.id}/{rand_value}']=reason
+					if path.exists(f"file/warn/{member.id}.json"):
+						with open(f"file/warn/{member.id}.json", "r") as ff:
+							data = json.load(ff)
+						ff.close()
+					else:
+						pass
 					em = discord.Embed(title="🔔 | Warn User", description=f"The case has been recorded under `warn{member.id}/{rand_value}`. To get all cases for this person, type `$cases <member>`", colour=discord.Colour.green())
 					await alert.edit(embed=em, mention_author=False)
 				
