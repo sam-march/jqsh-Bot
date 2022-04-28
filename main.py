@@ -22,6 +22,7 @@ client.remove_command("help")
 
 async def on_ready():
 	print("Bot is online and ready to serve!")
+	
 	await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching,name=f" $help"))
 
 
@@ -33,27 +34,27 @@ async def warn(ctx, member: discord.Member, *, reason=None):
 		em = discord.Embed(title="❌ | DM Commands", description="You can't use this commands in the bot's DMs, please go back to the server and try there", colour=discord.Colour.red())
 		alert=await ctx.reply(embed=em, mention_author=False)
 	else:
-		em = discord.Embed(title="🔔 | Warn User", description="Warning User...Please Wait", colour=discord.Colour.green())
-		alert=await ctx.reply(embed=em, mention_author=False)
-		try:
-			if reason == None:
-				em = discord.Embed(title="❌ | Warn Error", description="You must enter a reason to warn the user", colour=discord.Colour.red())
+				em = discord.Embed(title="🔔 | Warn User", description="Warning User...Please Wait", colour=discord.Colour.green())
+				alert=await ctx.reply(embed=em, mention_author=False)
+		#try:
+				if reason == None:
+					em = discord.Embed(title="❌ | Warn Error", description="You must enter a reason to warn the user", colour=discord.Colour.red())
 				await alert.edit(embed=em, mention_author=False)
 			else:
-				em = discord.Embed(title="Warning", description=f"You have been sent a warning from {ctx.author}. Reason: ```{reason}```", colour=discord.Colour.green())
+				em = discord.Embed(title="Warning", description=f"You have been sent a warning from {ctx.author}. Reason: ```{reason}```\n\nCase ID: `warn{member.id}-{rand_value}`", colour=discord.Colour.green())
 				await member.send(embed=em)
 				rand_value = random.randint(1,100000000)
 				try:
 					db[f'warn{member.id}-{rand_value}']=reason
-					em = discord.Embed(title="🔔 | Warn User", description=f"The case has been recorded under `warn{member.id}-{rand_value}`. To get all cases for this person, type `$cases <member>`", colour=discord.Colour.green())
+					em = discord.Embed(title="🔔 | Warn User", description=f"The case has been recorded under `warn{member.id}-{rand_value}`. To get all cases for this person, type `$cases {member.id}`", colour=discord.Colour.green())
 					await alert.edit(embed=em, mention_author=False)
 				
 				except:
 					em = discord.Embed(title="❌ | Warn Error", description="Database Error, Please try again", colour=discord.Colour.red())
 					await alert.edit(embed=em, mention_author=False)
-		except:
-			em = discord.Embed(title="❌ | Warn Error", description="Something went wrong, please try again", colour=discord.Colour.red())
-			await alert.edit(embed=em, mention_author=False)
+		#except:
+			#em = discord.Embed(title="❌ | Warn Error", description="Something went wrong, please try again", colour=discord.Colour.red())
+			#await alert.edit(embed=em, mention_author=False)
 		
 								
 
@@ -65,7 +66,7 @@ async def cases(ctx, member:discord.Member):
 	try:
 		key = f'warn{member.id}'
 		print(member.id)
-		matches = db.prefix(key)
+		matches = db.string(key)
 		list = []
 		for matches in db.keys():
 			list.append(matches)
@@ -97,5 +98,3 @@ async def remove_cases(ctx, member:discord.Member):
 		await alert.edit(embed=em, mention_author=False)
 keep_alive()
 client.run(token)
-
-
